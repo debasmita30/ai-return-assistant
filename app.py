@@ -11,7 +11,6 @@ from nltk.stem import WordNetLemmatizer
 import nltk
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import altair as alt
-import os
 import requests
 from io import BytesIO
 
@@ -19,18 +18,41 @@ from io import BytesIO
 DEFAULT_IMAGE_URL = "https://assets.myntassets.com/w_412,q_30,dpr_3,fl_progressive,f_webp/assets/images/29261846/2024/4/30/7d624718-2668-4e42-a1d3-b7beb0dad5d41714465033384Dresses1.jpg"
 
 # --- NLTK Setup ---
+lemmatizer = WordNetLemmatizer()
+stop_words = set(ENGLISH_STOP_WORDS)
+
 def ensure_nltk_data():
-    """Ensure NLTK data is available in any environment."""
-    resources = ['tokenizers/punkt', 'corpora/wordnet']
-    for res in resources:
+    """Try to download NLTK data; app still works if download fails."""
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
         try:
-            nltk.data.find(res)
-        except LookupError:
-            with st.spinner(f"Downloading NLTK data: {res}"):
-                nltk.download(res.split('/')[-1], quiet=True)
-    st.info("NLTK data ready.")
+            nltk.download('punkt', quiet=True)
+        except:
+            st.warning("Could not download NLTK 'punkt'. Using basic tokenizer.")
+
+    try:
+        nltk.data.find('corpora/wordnet')
+    except LookupError:
+        try:
+            nltk.download('wordnet', quiet=True)
+        except:
+            st.warning("Could not download NLTK 'wordnet'. Lemmatization may be limited.")
 
 ensure_nltk_data()
+
+def preprocess_text(text):
+    """Clean and preprocess text safely; fallback if NLTK unavailable."""
+    text = re.sub(r'[^a-zA-Z\s]', '', str(text)).lower().strip()
+    try:
+        tokens = nltk.word_tokenize(text)
+    except LookupError:
+        tokens = text.split()
+    try:
+        tokens = [lemmatizer.lemmatize(t) for t in tokens if t not in stop_words]
+    except:
+        pass
+    return " ".join(tokens)
 
 # --- Load models and sentiment analyzer ---
 @st.cache_resource
@@ -65,20 +87,6 @@ def create_fallback_image():
     font = ImageFont.load_default()
     d.text((10, 10), "Image not available", fill=(255, 255, 255), font=font)
     return img
-
-lemmatizer = WordNetLemmatizer()
-stop_words = set(ENGLISH_STOP_WORDS)
-
-def preprocess_text(text):
-    """Clean and preprocess text for NLP model with safe NLTK handling."""
-    text = re.sub(r'[^a-zA-Z\s]', '', str(text)).lower().strip()
-    try:
-        tokens = nltk.word_tokenize(text)
-        tokens = [lemmatizer.lemmatize(t) for t in tokens if t not in stop_words]
-        return " ".join(tokens)
-    except LookupError:
-        st.warning("NLTK tokenizer missing, returning raw text.")
-        return text
 
 def predict_image(image_model, image_input):
     if image_model is None:
