@@ -1,5 +1,5 @@
 🤖 AI-Powered Return Assistant
-Live Demo: [Link to your Streamlit App]
+Live Demo: [https://ai-return-assistant-mgjhvkazynfsvdlqe4gcpa.streamlit.app/]
 
 Project Overview
 This project is a full-stack data science application built to solve a key challenge in e-commerce: efficiently and accurately validating customer return requests. Manual validation is slow, costly, and prone to inconsistency. This AI-powered assistant automates the process by using a multimodal approach, analyzing both the customer's written complaint and the visual evidence they provide.
