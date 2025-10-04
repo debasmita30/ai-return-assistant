@@ -30,7 +30,6 @@ def ensure_nltk_data():
             nltk.download('punkt', quiet=True)
         except:
             st.warning("Could not download NLTK 'punkt'. Using basic tokenizer.")
-
     try:
         nltk.data.find('corpora/wordnet')
     except LookupError:
@@ -106,9 +105,9 @@ def predict_image(image_model, image_input):
         img = img.convert('RGB')
     img = img.resize((160, 160))
     img_array = np.array(img)
-    if len(img_array.shape) == 2:  # grayscale
+    if len(img_array.shape) == 2:
         img_array = np.stack((img_array,)*3, axis=-1)
-    if img_array.shape[2] == 4:  # RGBA
+    if img_array.shape[2] == 4:
         img_array = img_array[:, :, :3]
     img_array = np.expand_dims(img_array, axis=0)
     pred = image_model.predict(img_array)
@@ -197,5 +196,50 @@ with col2:
                     if risk_score >= 70: st.error("❌ Reject Return or Investigate Further")
                     elif risk_score >= 40: st.warning("⚠️ Manual Review Required")
                     else: st.success("✅ Approve Return")
+
+                # --- Global Review Analysis Section ---
+                st.markdown("---")
+                st.subheader("Global Review Analysis (All Products)")
+
+                if not reviews_df.empty:
+                    sentiment_counts = {"Negative": 0, "Neutral": 0, "Positive": 0}
+                    negative_reviews_text = []
+
+                    for _, row in reviews_df.iterrows():
+                        review_text = str(row.get('Review Text', ''))
+                        if review_text.strip():
+                            processed_review = preprocess_text(review_text)
+                            score = analyzer.polarity_scores(processed_review)['compound']
+                            if score <= -0.05:
+                                sentiment_counts["Negative"] += 1
+                                negative_reviews_text.append(review_text)
+                            elif score >= 0.05:
+                                sentiment_counts["Positive"] += 1
+                            else:
+                                sentiment_counts["Neutral"] += 1
+
+                    # Show recent negative reviews
+                    if negative_reviews_text:
+                        with st.expander("Show Recent Negative Reviews (Global)"):
+                            for r in negative_reviews_text[:5]:
+                                st.info(f'"{r}"')
+                    else:
+                        st.write("No distinct negative reviews found.")
+
+                    # --- Altair chart for sentiment distribution ---
+                    df_sent = pd.DataFrame(list(sentiment_counts.items()), columns=["Sentiment", "Count"])
+                    color_scale = alt.Scale(
+                        domain=["Positive", "Neutral", "Negative"],
+                        range=["#2ca0ac", "#ffcc00", "#d62728"]
+                    )
+                    chart = alt.Chart(df_sent).mark_bar().encode(
+                        x=alt.X("Sentiment", sort=["Negative", "Neutral", "Positive"]),
+                        y=alt.Y("Count", axis=alt.Axis(tickMinStep=1)),
+                        color=alt.Color("Sentiment", scale=color_scale, legend=None),
+                        tooltip=['Sentiment', 'Count']
+                    ).properties(width=400, height=300)
+                    st.altair_chart(chart, use_container_width=True)
+                else:
+                    st.info("No reviews data available for global analysis.")
         else:
-            st.error("Provide all inputs: Product ID, Complaint, and Image (or default).")
+            st.error("Please provide all inputs: Product ID, Complaint, and an Image (or use default).")
