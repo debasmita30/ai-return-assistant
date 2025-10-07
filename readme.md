@@ -1,4 +1,5 @@
 Live App Demo | Tableau Dashboard
+
 Project Overview: This is a full-stack data science application built to solve a key challenge in e-commerce: efficiently and accurately validating customer return requests. Manual validation is slow, costly, and prone to inconsistency. This AI-powered assistant automates the process by using a multimodal approach, analyzing both the customer's written complaint and the visual evidence they provide.
 
 The result is an interactive tool that provides an instant, evidence-based recommendation (Approve, Review, or Reject), enabling operations teams to handle returns more effectively and identify potential fraud.
