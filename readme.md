@@ -122,7 +122,7 @@ Visualization: Tableau
 
 Clone the repository
 
-git clone https://github.com/yourusername/return-gpt-hybrid.git
+git clone https://github.com/debasmita30/ai-return-assistant
 cd return-gpt-hybrid
 
 
