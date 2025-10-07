@@ -144,7 +144,7 @@ streamlit run app.py
 
 
 Access locally
-Visit http://localhost:8501 in your browser
+Visit http://localhost:8501 in browser
 
 🪄 About
 
