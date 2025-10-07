@@ -1,9 +1,14 @@
 🛍️ Smart Returns Validator | Tableau Dashboard
+
 🚀 Live Demo Links
 
 🔗 Streamlit App
 
-📊 Tableau Dashboard
+https://ai-return-assistant-mgjhvkazynfsvdlqe4gcpa.streamlit.app/
+
+📊 Tableau Dashboard 
+
+https://public.tableau.com/app/profile/debasmita.chatterjee7587/viz/MultimodalReturnIntelligenceDashboard/Dashboard1?publish=yes
 
 💡 Project Overview
 
