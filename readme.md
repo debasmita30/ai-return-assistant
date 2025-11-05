@@ -1,4 +1,4 @@
-🛍️ AI-Powered Return Validation System (ReturnGPT) | Tableau Dashboard
+🛍️ AI-Powered Return Validation System | Tableau Dashboard
 
 🚀 Live Demo Links
 
